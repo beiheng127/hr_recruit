@@ -1,0 +1,72 @@
+# ========== 系统文件 ==========
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# ========== IDE ==========
+.idea/
+*.iml
+.vscode/
+*.ipr
+*.iws
+
+# ========== Java / Maven ==========
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+
+# ========== Spring Boot ==========
+# 本地配置文件（含数据库密码、API Key等敏感信息）
+**/application.yml
+**/application-local.*
+**/application-dev.*
+**/application-prod.*
+
+# 日志文件
+logs/
+*.log
+
+# ========== Frontend (Vue/Vite) ==========
+node_modules/
+dist/
+*.local
+vite-env.d.ts
+
+# ========== 上传文件目录 ==========
+uploads/
+upload/
+hr-recruit-uploads/
+
+# ========== 项目根目录下的临时/文档文件（不应入库）==========
+# 需求/设计文档（二进制）
+*.xlsx
+*.docx
+*.pptx
+*.pdf
+
+# 脚本工具（本地辅助脚本，非项目运行所需）
+gen_*.js
+insert_image*.py
+render_plantuml*.py
+mock_data.sql
+
+# 解压后的 docx 目录（临时文件）
+*_unpacked/
+*_target/
+req_*/
+test_*/
+interface_*/
+plan_*/
+
+# PlantUML 临时文件
+*.puml
+*.png
+
+# 故障历史（可选，团队共享可保留）
+#.fault-history.md
