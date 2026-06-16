@@ -8,6 +8,10 @@ export function getOfferDetail(id) {
   return request.get(`/offers/${id}`)
 }
 
+export function getOfferByApplication(applicationId) {
+  return request.get(`/offers/by-application/${applicationId}`)
+}
+
 export function createOffer(data) {
   return request.post('/offers', data)
 }
@@ -18,4 +22,8 @@ export function sendOffer(id) {
 
 export function updateOffer(id, data) {
   return request.put(`/offers/${id}`, data)
+}
+
+export function acceptOffer(id) {
+  return request.post(`/offers/${id}/accept`)
 }

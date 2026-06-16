@@ -46,7 +46,7 @@
           <el-button
             v-if="row.fileName"
             link type="primary" size="small"
-            @click="handleDetail(row); setTimeout(() => openPdfPreview(), 300)"
+            @click="handleDetailWithPreview(row)"
           >
             <el-icon><Document /></el-icon> {{ row.fileName.length > 10 ? row.fileName.slice(0, 8) + '...' : row.fileName }}
           </el-button>
@@ -227,7 +227,7 @@
         </div>
       </div>
       <template #footer>
-        <el-button @click="detailVisible = false">关闭</el-button>
+        <el-button @click="closeDetail">关闭</el-button>
       </template>
     </el-dialog>
   </div>
@@ -260,7 +260,7 @@ const lastUploadFile = ref('')
 const lastUploadedId = ref(null)
 
 const uploadUrl = '/api/resumes/upload'
-const uploadHeaders = { Authorization: `Bearer ${userStore.token}` }
+const uploadHeaders = computed(() => ({ Authorization: `Bearer ${userStore.token}` }))
 
 const filters = reactive({ keyword: '', skills: '', talentStatus: '' })
 const pagination = reactive({ page: 1, pageSize: 10, total: 0 })
@@ -357,19 +357,13 @@ function onUploadSuccess(response) {
   uploading.value = false
   const fname = uploadingFileName.value || '未知文件'
   if (response && response.code === 200) {
-    ElMessage.success(`✅ "${fname}" 上传成功`)
+    ElMessage.success(`"${fname}" 上传成功，后台正在解析...`)
     lastUploadFile.value = fname
     if (response.data) {
       lastUploadedId.value = response.data
     }
-    // 自动解析
-    parseResume(response.data).then(() => {
-      ElMessage.info('简历 AI 解析完成')
-      fetchData()
-    }).catch(() => {
-      ElMessage.warning('AI 解析失败，可手动点击解析')
-      fetchData()
-    })
+    // 后端 uploadAndParse 内部已自动调用 AI 解析，无需前端再次调用
+    fetchData()
   } else {
     ElMessage.error(response?.message || '上传失败')
   }
@@ -389,22 +383,46 @@ function scrollToLastUploaded() {
   })
 }
 
-function handleDetail(row) {
+async function handleDetail(row) {
   // 先获取完整详情（包含 fileName）
-  getResumeDetail(row.id).then(res => {
-    detailData.value = res.data || { ...row }
-  }).catch(() => {
-    detailData.value = { ...row }
-  })
-  detailVisible.value = true
-  pdfVisible.value = false
+  if (pdfUrl.value) URL.revokeObjectURL(pdfUrl.value)
   pdfUrl.value = ''
+  pdfVisible.value = false
   pdfLoading.value = false
+  detailVisible.value = true
+  try {
+    const res = await getResumeDetail(row.id)
+    detailData.value = res.data || { ...row }
+  } catch {
+    detailData.value = { ...row }
+  }
+}
+
+// 点击文件名时：先加载详情，再自动预览附件
+async function handleDetailWithPreview(row) {
+  await handleDetail(row)
+  // 如果有关联文件则自动预览
+  if (detailData.value.fileName) {
+    openPdfPreview()
+  }
+}
+
+// 关闭详情弹窗时释放 Blob URL
+function closeDetail() {
+  if (pdfUrl.value) URL.revokeObjectURL(pdfUrl.value)
+  pdfUrl.value = ''
+  pdfVisible.value = false
+  detailVisible.value = false
 }
 
 function openPdfPreview() {
   if (!detailData.value.fileName) {
     ElMessage.warning('该简历没有上传附件')
+    return
+  }
+  // DOCX 文件不支持浏览器内预览，提示下载
+  if (detailData.value.fileName.toLowerCase().endsWith('.docx')) {
+    ElMessage.info('DOCX 文件暂不支持在线预览，请点击"下载"查看')
     return
   }
   pdfLoading.value = true
@@ -428,18 +446,29 @@ function openPdfPreview() {
   })
 }
 
-function downloadPdf() {
+async function downloadPdf() {
+  if (!detailData.value.fileName) {
+    ElMessage.warning('该简历没有上传附件')
+    return
+  }
   const token = userStore.token
-  fetch(`/api/resumes/${detailData.value.id}/file`, {
-    headers: { Authorization: `Bearer ${token}` }
-  }).then(res => res.blob())
-  .then(blob => {
+  try {
+    const res = await fetch(`/api/resumes/${detailData.value.id}/file`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    if (!res.ok) throw new Error('下载失败')
+    const blob = await res.blob()
+    if (blob.size === 0) throw new Error('文件为空')
+    const ext = detailData.value.fileName.includes('.') ? detailData.value.fileName.split('.').pop() : 'pdf'
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = (detailData.value.fileName || detailData.value.name || 'resume') + '.pdf'
+    a.download = `${detailData.value.name || 'resume'}.${ext}`
     a.click()
     URL.revokeObjectURL(a.href)
-  })
+  } catch (err) {
+    console.error('下载失败:', err)
+    ElMessage.error('下载失败，请重试')
+  }
 }
 
 async function handleParse(row) {

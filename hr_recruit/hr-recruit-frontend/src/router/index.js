@@ -109,7 +109,7 @@ const routes = [
         path: 'logs',
         name: 'OperationLog',
         component: () => import('@/views/log/LogView.vue'),
-        meta: { title: '操作日志', icon: 'Notebook' }
+        meta: { title: '操作日志', icon: 'Notebook', roles: ['ADMIN'] }
       }
     ]
   }
@@ -124,13 +124,28 @@ router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   document.title = `${to.meta.title || ''} - HR招聘管理系统`
 
+  // 登录鉴权
   if (to.meta.requiresAuth !== false && !userStore.token) {
     next('/login')
-  } else if ((to.path === '/login' || to.path === '/admin/login') && userStore.token) {
-    next('/')
-  } else {
-    next()
+    return
   }
+  if ((to.path === '/login' || to.path === '/admin/login') && userStore.token) {
+    next('/')
+    return
+  }
+
+  // 角色权限检查
+  const requiredRoles = to.meta.roles
+  if (requiredRoles && Array.isArray(requiredRoles)) {
+    const userRole = userStore.userInfo?.role || ''
+    if (!requiredRoles.includes(userRole)) {
+      // 无权限，重定向到Dashboard
+      next('/dashboard')
+      return
+    }
+  }
+
+  next()
 })
 
 export default router

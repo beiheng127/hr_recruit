@@ -19,6 +19,8 @@ public class InterviewEvaluation {
     private Integer learning;
     private String evaluation;
     private String aiSummary;
+    @TableField(exist = false)
+    private String recommend;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

@@ -54,7 +54,8 @@ public class DashboardServiceImpl implements DashboardService {
                         .groupBy("source_channel")
         );
         for (Map<String, Object> row : rows) {
-            result.put((String) row.get("channel"), row.get("count"));
+            String channel = (String) row.get("channel");
+            result.put(channel != null ? channel : "未知渠道", row.get("count"));
         }
         return result;
     }

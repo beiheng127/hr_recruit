@@ -7,6 +7,7 @@ import com.hr.recruit.entity.OperationLog;
 import com.hr.recruit.service.OperationLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 @RestController
 @RequestMapping("/api/logs")
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('ADMIN')")
 public class OperationLogController {
 
     private final OperationLogService operationLogService;

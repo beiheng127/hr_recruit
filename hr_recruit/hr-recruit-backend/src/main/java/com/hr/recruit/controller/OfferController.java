@@ -44,6 +44,18 @@ public class OfferController {
         return Result.success(offer);
     }
 
+    @GetMapping("/by-application/{applicationId}")
+    public Result<OfferRecord> getByApplication(@PathVariable Long applicationId) {
+        LambdaQueryWrapper<OfferRecord> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(OfferRecord::getApplicationId, applicationId);
+        wrapper.orderByDesc(OfferRecord::getCreateTime);
+        OfferRecord offer = offerRecordService.getOne(wrapper);
+        if (offer == null) {
+            return Result.error(404, "未找到该申请对应的Offer");
+        }
+        return Result.success(offer);
+    }
+
     @PostMapping
     public Result<Void> create(@RequestBody OfferRecord offer) {
         offerRecordService.save(offer);
@@ -60,19 +72,44 @@ public class OfferController {
         offer.setSentAt(LocalDateTime.now());
         offerRecordService.updateById(offer);
 
-        // 创建通知记录
-        ApplicantJob applicantJob = applicantJobMapper.selectById(offer.getApplicationId());
-        if (applicantJob != null) {
-            Notification notification = new Notification();
-            notification.setRecipientId(applicantJob.getResumeId());
-            notification.setType("OFFER");
-            notification.setTitle("恭喜！您收到录用Offer");
-            notification.setContent("岗位：" + (offer.getPosition() != null ? offer.getPosition() : "") + "，请及时查看并确认。");
-            notification.setIsRead(0);
-            notification.setCreateTime(LocalDateTime.now());
-            notificationService.save(notification);
+        // 更新 applicant_job 状态 + 创建通知
+        if (offer.getApplicationId() != null) {
+            ApplicantJob applicantJob = applicantJobMapper.selectById(offer.getApplicationId());
+            if (applicantJob != null) {
+                applicantJob.setStatus("OFFER");
+                applicantJobMapper.updateById(applicantJob);
+
+                Notification notification = new Notification();
+                notification.setRecipientId(applicantJob.getResumeId());
+                notification.setType("OFFER");
+                notification.setTitle("恭喜！您收到录用Offer");
+                notification.setContent("岗位：" + (offer.getPosition() != null ? offer.getPosition() : "") + "，请及时查看并确认。");
+                notification.setIsRead(0);
+                notification.setCreateTime(LocalDateTime.now());
+                notificationService.save(notification);
+            }
         }
         return Result.success("发送成功");
+    }
+
+    @PostMapping("/{id}/accept")
+    public Result<Void> accept(@PathVariable Long id) {
+        OfferRecord offer = offerRecordService.getById(id);
+        if (offer == null) {
+            return Result.error("Offer不存在");
+        }
+        offer.setStatus("ACCEPTED");
+        offerRecordService.updateById(offer);
+
+        // 更新 applicant_job 状态为 HIRED
+        if (offer.getApplicationId() != null) {
+            ApplicantJob applicantJob = applicantJobMapper.selectById(offer.getApplicationId());
+            if (applicantJob != null) {
+                applicantJob.setStatus("HIRED");
+                applicantJobMapper.updateById(applicantJob);
+            }
+        }
+        return Result.success("接受成功");
     }
 
     @PutMapping("/{id}")

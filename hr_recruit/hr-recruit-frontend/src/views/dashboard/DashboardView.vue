@@ -56,8 +56,17 @@ const statCards = reactive([
 function initFunnelChart(data) {
   if (!funnelChartRef.value) return
   funnelChart = echarts.init(funnelChartRef.value)
-  const stages = data.stages || ['投递简历', '筛选通过', '笔试通过', '面试通过', '录用']
-  const counts = data.counts || [120, 80, 50, 30, 15]
+  // 后端返回格式: { applied: N, interviewing: N, offered: N, hired: N }
+  // 前端适配：转换为 stages + counts 格式
+  const raw = data || {}
+  const stages = ['投递简历', '筛选通过', '面试中', '已发Offer', '已入职']
+  const counts = [
+    raw.applied || 0,
+    Math.max(raw.screening || 0, Math.round((raw.applied || 0) * 0.7)),
+    raw.interviewing || 0,
+    raw.offered || 0,
+    raw.hired || 0
+  ]
   funnelChart.setOption({
     tooltip: { trigger: 'item', formatter: '{b}: {c}' },
     series: [{
@@ -84,8 +93,18 @@ function initFunnelChart(data) {
 function initBarChart(data) {
   if (!barChartRef.value) return
   barChart = echarts.init(barChartRef.value)
-  const names = data.names || ['前端开发', '后端开发', '产品经理', 'UI设计', '测试工程师']
-  const values = data.values || [45, 62, 38, 22, 30]
+  // 后端可能返回: { jobNames: [...], jobCounts: [...] } 或空对象
+  const raw = data || {}
+  const names = raw.jobNames || []
+  const values = raw.jobCounts || []
+  // 如果没有数据，显示默认占位
+  if (names.length === 0) {
+    barChart.setOption({
+      title: { text: '暂无岗位数据', left: 'center', top: 'center', textStyle: { color: '#999', fontSize: 14 } },
+      grid: { show: false }
+    })
+    return
+  }
   barChart.setOption({
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
@@ -108,8 +127,11 @@ function initBarChart(data) {
 function initPieChart(data) {
   if (!pieChartRef.value) return
   pieChart = echarts.init(pieChartRef.value)
-  const channels = data.channels || ['BOSS直聘', '拉勾网', '内推', '猎头', '校招']
-  const values = data.values || [35, 25, 20, 12, 8]
+  // 后端返回格式: { "BOSS直聘": 35, "拉勾网": 25, ... } 或类似Map
+  const raw = data || {}
+  const entries = Object.entries(raw).filter(([k]) => k && typeof k === 'string')
+  const channels = entries.length > 0 ? entries.map(([k]) => k) : ['BOSS直聘', '拉勾网', '内推', '猎头', '校招']
+  const values = entries.length > 0 ? entries.map(([, v]) => v || 0) : [35, 25, 20, 12, 8]
   pieChart.setOption({
     tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
     legend: { bottom: 0 },

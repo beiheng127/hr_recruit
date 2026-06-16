@@ -1,10 +1,16 @@
 package com.hr.recruit.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hr.recruit.entity.AiMatchRecord;
+import com.hr.recruit.mapper.AiMatchRecordMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
@@ -13,6 +19,8 @@ import java.util.Map;
 public class AiController {
 
     private final ChatClient chatClient;
+    private final AiMatchRecordMapper aiMatchRecordMapper;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @PostMapping("/generate-jd")
     public String generateJd(@RequestBody Map<String, String> req) {
@@ -40,11 +48,11 @@ public class AiController {
     public String matchResumeJob(@RequestBody Map<String, String> req) {
         String prompt = """
             请分析以下简历与岗位的匹配程度：
-            
+
             岗位要求：%s
-            
+
             简历内容：%s
-            
+
             请输出JSON格式：
             {
               "matchScore": 分数(0-100),
@@ -53,7 +61,28 @@ public class AiController {
             }
             """.formatted(req.get("jobRequirement"), req.get("resumeText"));
 
-        return chatClient.prompt().user(prompt).call().content();
+        String aiResponse = chatClient.prompt().user(prompt).call().content();
+
+        // 解析AI返回的JSON并保存到数据库
+        Long resumeId = req.get("resumeId") != null ? Long.valueOf(req.get("resumeId")) : null;
+        Long jobId = req.get("jobId") != null ? Long.valueOf(req.get("jobId")) : null;
+        if (aiResponse != null && !aiResponse.isBlank() && resumeId != null && jobId != null) {
+            try {
+                JsonNode root = OBJECT_MAPPER.readTree(aiResponse);
+                AiMatchRecord record = new AiMatchRecord();
+                record.setResumeId(resumeId);
+                record.setJobId(jobId);
+                if (root.has("matchScore")) record.setMatchScore(root.get("matchScore").asInt());
+                if (root.has("matchReason")) record.setMatchReason(root.get("matchReason").asText());
+                if (root.has("matchDetail")) record.setMatchDetail(root.get("matchDetail").toString());
+                record.setCreateTime(LocalDateTime.now());
+                aiMatchRecordMapper.insert(record);
+            } catch (JsonProcessingException e) {
+                // JSON解析失败，不阻塞返回结果
+            }
+        }
+
+        return aiResponse;
     }
 
     @PostMapping("/generate-questions")

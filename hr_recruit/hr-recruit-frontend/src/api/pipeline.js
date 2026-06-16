@@ -20,6 +20,11 @@ export function getStageRecords(applicationId) {
   return request.get(`/api/pipelines/records/${applicationId}`)
 }
 
+/** 根据岗位ID查询该岗位下所有候选人的阶段记录（含候选人信息） */
+export function getJobStageRecords(jobId) {
+  return request.get(`/api/pipelines/job-records/${jobId}`)
+}
+
 export function updateStageStatus(recordId, status, note) {
   return request.put(`/api/pipelines/stages/${recordId}/status`, null, { params: { status, note } })
 }

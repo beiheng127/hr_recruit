@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -42,13 +43,13 @@ public class AuthController {
         if (user == null) {
             return Result.error("用户不存在");
         }
-        return Result.success(Map.of(
-                "userId", user.getId(),
-                "username", user.getUsername(),
-                "realName", user.getRealName(),
-                "role", user.getRole(),
-                "email", user.getEmail() != null ? user.getEmail() : "",
-                "phone", user.getPhone() != null ? user.getPhone() : ""
-        ));
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("userId", user.getId());
+        userMap.put("username", user.getUsername() != null ? user.getUsername() : "");
+        userMap.put("realName", user.getRealName() != null ? user.getRealName() : "");
+        userMap.put("role", user.getRole() != null ? user.getRole() : "");
+        userMap.put("email", user.getEmail() != null ? user.getEmail() : "");
+        userMap.put("phone", user.getPhone() != null ? user.getPhone() : "");
+        return Result.success(userMap);
     }
 }

@@ -2,7 +2,7 @@
   <div class="pipeline-view">
     <div class="pipeline-header">
       <el-select v-model="selectedJobId" placeholder="选择岗位" style="width:300px" @change="loadPipeline" clearable>
-        <el-option v-for="j in jobList" :key="j.id" :label="j.name" :value="j.id" />
+        <el-option v-for="j in jobList" :key="j.id" :label="j.positionName" :value="j.id" />
       </el-select>
       <el-tag type="info">共 {{ totalCandidates }} 人</el-tag>
     </div>
@@ -50,7 +50,7 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { getPipeline, switchStage, getStageRecords } from '@/api/pipeline'
+import { getPipeline, switchStage, getJobStageRecords } from '@/api/pipeline'
 import { getJobList } from '@/api/job'
 
 const stages = ref([])
@@ -127,6 +127,7 @@ async function loadPipeline() {
     const res = await getPipeline(selectedJobId.value)
     const list = res.data || []
     stages.value = list.map(item => ({
+      pipelineId: item.id,
       stageType: item.stageType,
       stageName: item.stageName,
       stageOrder: item.stageOrder
@@ -135,19 +136,16 @@ async function loadPipeline() {
     stages.value = []
   }
   try {
-    const res = await getStageRecords(selectedJobId.value)
+    const res = await getJobStageRecords(selectedJobId.value)
     const records = res.data || []
-    candidates.value = records.map(item => {
-      const stage = stages.value.find(s => s.pipelineId === item.pipelineId)
-      return {
-        id: item.applicationId || item.id,
-        recordId: item.id,
-        name: item.name || '',
-        position: item.position || '',
-        matchScore: item.matchScore || 0,
-        stage: stage ? stage.stageType : ''
-      }
-    })
+    candidates.value = records.map(item => ({
+      id: item.applicationId || item.id,
+      recordId: item.id,
+      name: item.name || '',
+      position: item.position || '',
+      matchScore: item.matchScore || 0,
+      stage: item.stageType || ''
+    }))
   } catch {
     candidates.value = []
   }

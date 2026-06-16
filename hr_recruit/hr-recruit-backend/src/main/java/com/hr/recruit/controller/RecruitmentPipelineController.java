@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hr.recruit.common.Result;
 import com.hr.recruit.entity.CandidateStageRecord;
 import com.hr.recruit.entity.RecruitmentPipeline;
+import com.hr.recruit.mapper.CandidateStageRecordMapper;
 import com.hr.recruit.service.CandidateStageRecordService;
 import com.hr.recruit.service.RecruitmentPipelineService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -20,6 +22,7 @@ public class RecruitmentPipelineController {
 
     private final RecruitmentPipelineService pipelineService;
     private final CandidateStageRecordService candidateStageRecordService;
+    private final CandidateStageRecordMapper candidateStageRecordMapper;
 
     @GetMapping("/job/{jobId}")
     public Result<List<RecruitmentPipeline>> getByJobId(@PathVariable Long jobId) {
@@ -56,9 +59,16 @@ public class RecruitmentPipelineController {
     public Result<List<CandidateStageRecord>> getStageRecords(@PathVariable Long applicationId) {
         LambdaQueryWrapper<CandidateStageRecord> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(CandidateStageRecord::getApplicationId, applicationId)
-               .eq(CandidateStageRecord::getDeleted, 0)
                .orderByAsc(CandidateStageRecord::getCreateTime);
         return Result.success(candidateStageRecordService.list(wrapper));
+    }
+
+    /**
+     * 根据岗位ID查询该岗位下所有候选人的阶段记录（含候选人信息）
+     */
+    @GetMapping("/job-records/{jobId}")
+    public Result<List<Map<String, Object>>> getStageRecordsByJobId(@PathVariable Long jobId) {
+        return Result.success(candidateStageRecordMapper.getStageRecordsByJobId(jobId));
     }
 
     @PutMapping("/stages/{recordId}/status")

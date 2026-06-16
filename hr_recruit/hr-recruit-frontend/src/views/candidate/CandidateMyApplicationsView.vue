@@ -83,7 +83,7 @@
             </div>
             <template #footer>
               <el-button @click="offerVisible = false">关闭</el-button>
-              <el-button type="primary" v-if="offerData">确认接受</el-button>
+              <el-button type="primary" v-if="offerData" @click="handleAcceptOffer">确认接受</el-button>
             </template>
           </el-dialog>
         </div>
@@ -101,7 +101,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { List, Clock, Calendar, Search, Loading } from '@element-plus/icons-vue'
 import request from '@/api/request'
-import { getOfferDetail } from '@/api/offer'
+import { getOfferByApplication, acceptOffer } from '@/api/offer'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
@@ -174,13 +174,24 @@ async function viewOffer(app) {
   offerVisible.value = true
   offerData.value = null
   try {
-    // 根据 app 对象中的 offerId 或 applicantJobId 查询 Offer
-    const offerId = app.offerId || app.id
-    const res = await getOfferDetail(offerId)
+    // 按申请ID查询对应的Offer（而非直接传app.id给getOfferDetail）
+    const res = await getOfferByApplication(app.id)
     offerData.value = res.data || {}
   } catch (e) {
     ElMessage.error('获取Offer详情失败')
     offerVisible.value = false
+  }
+}
+
+async function handleAcceptOffer() {
+  if (!offerData.value || !offerData.value.id) return
+  try {
+    await acceptOffer(offerData.value.id)
+    ElMessage.success('恭喜！您已接受Offer')
+    offerVisible.value = false
+    loadApplications()
+  } catch (e) {
+    ElMessage.error('接受Offer失败，请重试')
   }
 }
 

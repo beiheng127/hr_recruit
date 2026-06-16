@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
-import java.math.BigDecimal;
 
 @Data
 @TableName("offer_record")
@@ -17,7 +16,7 @@ public class OfferRecord {
 
     private Long jobId;
 
-    private BigDecimal salary;
+    private String salary;
 
     private String position;
 

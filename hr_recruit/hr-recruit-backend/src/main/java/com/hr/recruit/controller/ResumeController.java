@@ -36,10 +36,21 @@ public class ResumeController {
             @RequestParam(defaultValue = "1") long pageNum,
             @RequestParam(defaultValue = "10") long pageSize,
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String talentPoolStatus) {
+            @RequestParam(required = false) String talentPoolStatus,
+            @RequestParam(required = false) String skillTags) {
         LambdaQueryWrapper<ResumeInfo> wrapper = new LambdaQueryWrapper<>();
-        if (keyword != null) wrapper.and(w -> w.like(ResumeInfo::getName, keyword).or().like(ResumeInfo::getSkillTags, keyword));
+        if (keyword != null) {
+            wrapper.and(w -> w.like(ResumeInfo::getName, keyword)
+                    .or().like(ResumeInfo::getSkillTags, keyword));
+        }
         if (talentPoolStatus != null) wrapper.eq(ResumeInfo::getTalentPoolStatus, talentPoolStatus);
+        if (skillTags != null) {
+            String[] tags = skillTags.split("[,，、]");
+            for (String tag : tags) {
+                String t = tag.trim();
+                if (!t.isEmpty()) wrapper.like(ResumeInfo::getSkillTags, t);
+            }
+        }
         wrapper.orderByDesc(ResumeInfo::getCreateTime);
         Page<ResumeInfo> page = resumeInfoService.page(new Page<>(pageNum, pageSize), wrapper);
         // 给每条记录附加文件名
@@ -106,7 +117,11 @@ public class ResumeController {
     }
 
     @PutMapping("/{id}/talent-status")
-    public Result<?> updateTalentStatus(@PathVariable Long id, @RequestParam String status) {
+    public Result<?> updateTalentStatus(@PathVariable Long id, @RequestBody Map<String, String> body) {
+        String status = body.get("status");
+        if (status == null || status.isBlank()) {
+            return Result.error(400, "状态不能为空");
+        }
         ResumeInfo resume = new ResumeInfo();
         resume.setId(id);
         resume.setTalentPoolStatus(status);

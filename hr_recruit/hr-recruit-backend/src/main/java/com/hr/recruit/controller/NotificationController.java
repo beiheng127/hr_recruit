@@ -6,6 +6,7 @@ import com.hr.recruit.common.Result;
 import com.hr.recruit.entity.Notification;
 import com.hr.recruit.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,9 +20,12 @@ public class NotificationController {
     public Result<Page<Notification>> list(
             @RequestParam(defaultValue = "1") long pageNum,
             @RequestParam(defaultValue = "10") long pageSize,
-            @RequestParam(required = false) Integer isRead) {
+            @RequestParam(required = false) Integer isRead,
+            Authentication auth) {
+        Long currentUserId = auth != null && auth.getPrincipal() instanceof Long ? (Long) auth.getPrincipal() : null;
         LambdaQueryWrapper<Notification> wrapper = new LambdaQueryWrapper<>();
         if (isRead != null) wrapper.eq(Notification::getIsRead, isRead);
+        if (currentUserId != null) wrapper.eq(Notification::getRecipientId, currentUserId);
         wrapper.orderByDesc(Notification::getCreateTime);
         return Result.success(notificationService.page(new Page<>(pageNum, pageSize), wrapper));
     }
@@ -36,10 +40,14 @@ public class NotificationController {
     }
 
     @PutMapping("/read-all")
-    public Result<Void> readAll() {
+    public Result<Void> readAll(Authentication auth) {
+        Long currentUserId = auth != null && auth.getPrincipal() instanceof Long ? (Long) auth.getPrincipal() : null;
         Notification n = new Notification();
         n.setIsRead(1);
-        notificationService.update(n, new LambdaQueryWrapper<>());
+        LambdaQueryWrapper<Notification> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Notification::getIsRead, 0);
+        if (currentUserId != null) wrapper.eq(Notification::getRecipientId, currentUserId);
+        notificationService.update(n, wrapper);
         return Result.success("全部已读");
     }
 }
