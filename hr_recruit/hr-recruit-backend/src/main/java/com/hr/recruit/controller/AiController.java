@@ -1,16 +1,22 @@
 package com.hr.recruit.controller;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hr.recruit.entity.AiMatchRecord;
 import com.hr.recruit.mapper.AiMatchRecordMapper;
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+<<<<<<< HEAD
 import java.time.LocalDateTime;
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import java.util.Map;
 
 @RestController
@@ -19,8 +25,11 @@ import java.util.Map;
 public class AiController {
 
     private final ChatClient chatClient;
+<<<<<<< HEAD
     private final AiMatchRecordMapper aiMatchRecordMapper;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 
     @PostMapping("/generate-jd")
     public String generateJd(@RequestBody Map<String, String> req) {
@@ -48,11 +57,19 @@ public class AiController {
     public String matchResumeJob(@RequestBody Map<String, String> req) {
         String prompt = """
             请分析以下简历与岗位的匹配程度：
+<<<<<<< HEAD
 
             岗位要求：%s
 
             简历内容：%s
 
+=======
+            
+            岗位要求：%s
+            
+            简历内容：%s
+            
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
             请输出JSON格式：
             {
               "matchScore": 分数(0-100),
@@ -61,6 +78,7 @@ public class AiController {
             }
             """.formatted(req.get("jobRequirement"), req.get("resumeText"));
 
+<<<<<<< HEAD
         String aiResponse = chatClient.prompt().user(prompt).call().content();
 
         // 解析AI返回的JSON并保存到数据库
@@ -83,6 +101,9 @@ public class AiController {
         }
 
         return aiResponse;
+=======
+        return chatClient.prompt().user(prompt).call().content();
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     }
 
     @PostMapping("/generate-questions")

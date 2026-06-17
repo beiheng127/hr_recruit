@@ -46,7 +46,11 @@
           <el-button
             v-if="row.fileName"
             link type="primary" size="small"
+<<<<<<< HEAD
             @click="handleDetailWithPreview(row)"
+=======
+            @click="handleDetail(row); setTimeout(() => openPdfPreview(), 300)"
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
           >
             <el-icon><Document /></el-icon> {{ row.fileName.length > 10 ? row.fileName.slice(0, 8) + '...' : row.fileName }}
           </el-button>
@@ -227,7 +231,11 @@
         </div>
       </div>
       <template #footer>
+<<<<<<< HEAD
         <el-button @click="closeDetail">关闭</el-button>
+=======
+        <el-button @click="detailVisible = false">关闭</el-button>
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
       </template>
     </el-dialog>
   </div>
@@ -260,7 +268,11 @@ const lastUploadFile = ref('')
 const lastUploadedId = ref(null)
 
 const uploadUrl = '/api/resumes/upload'
+<<<<<<< HEAD
 const uploadHeaders = computed(() => ({ Authorization: `Bearer ${userStore.token}` }))
+=======
+const uploadHeaders = { Authorization: `Bearer ${userStore.token}` }
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 
 const filters = reactive({ keyword: '', skills: '', talentStatus: '' })
 const pagination = reactive({ page: 1, pageSize: 10, total: 0 })
@@ -357,13 +369,28 @@ function onUploadSuccess(response) {
   uploading.value = false
   const fname = uploadingFileName.value || '未知文件'
   if (response && response.code === 200) {
+<<<<<<< HEAD
     ElMessage.success(`"${fname}" 上传成功，后台正在解析...`)
+=======
+    ElMessage.success(`✅ "${fname}" 上传成功`)
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     lastUploadFile.value = fname
     if (response.data) {
       lastUploadedId.value = response.data
     }
+<<<<<<< HEAD
     // 后端 uploadAndParse 内部已自动调用 AI 解析，无需前端再次调用
     fetchData()
+=======
+    // 自动解析
+    parseResume(response.data).then(() => {
+      ElMessage.info('简历 AI 解析完成')
+      fetchData()
+    }).catch(() => {
+      ElMessage.warning('AI 解析失败，可手动点击解析')
+      fetchData()
+    })
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   } else {
     ElMessage.error(response?.message || '上传失败')
   }
@@ -383,6 +410,7 @@ function scrollToLastUploaded() {
   })
 }
 
+<<<<<<< HEAD
 async function handleDetail(row) {
   // 先获取完整详情（包含 fileName）
   if (pdfUrl.value) URL.revokeObjectURL(pdfUrl.value)
@@ -413,6 +441,19 @@ function closeDetail() {
   pdfUrl.value = ''
   pdfVisible.value = false
   detailVisible.value = false
+=======
+function handleDetail(row) {
+  // 先获取完整详情（包含 fileName）
+  getResumeDetail(row.id).then(res => {
+    detailData.value = res.data || { ...row }
+  }).catch(() => {
+    detailData.value = { ...row }
+  })
+  detailVisible.value = true
+  pdfVisible.value = false
+  pdfUrl.value = ''
+  pdfLoading.value = false
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 }
 
 function openPdfPreview() {
@@ -420,11 +461,14 @@ function openPdfPreview() {
     ElMessage.warning('该简历没有上传附件')
     return
   }
+<<<<<<< HEAD
   // DOCX 文件不支持浏览器内预览，提示下载
   if (detailData.value.fileName.toLowerCase().endsWith('.docx')) {
     ElMessage.info('DOCX 文件暂不支持在线预览，请点击"下载"查看')
     return
   }
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   pdfLoading.value = true
   pdfVisible.value = false
   const token = userStore.token
@@ -446,6 +490,7 @@ function openPdfPreview() {
   })
 }
 
+<<<<<<< HEAD
 async function downloadPdf() {
   if (!detailData.value.fileName) {
     ElMessage.warning('该简历没有上传附件')
@@ -469,6 +514,20 @@ async function downloadPdf() {
     console.error('下载失败:', err)
     ElMessage.error('下载失败，请重试')
   }
+=======
+function downloadPdf() {
+  const token = userStore.token
+  fetch(`/api/resumes/${detailData.value.id}/file`, {
+    headers: { Authorization: `Bearer ${token}` }
+  }).then(res => res.blob())
+  .then(blob => {
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = (detailData.value.fileName || detailData.value.name || 'resume') + '.pdf'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  })
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 }
 
 async function handleParse(row) {

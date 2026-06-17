@@ -9,19 +9,28 @@ import com.hr.recruit.mapper.ResumeInfoMapper;
 import com.hr.recruit.service.ResumeInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+<<<<<<< HEAD
 import org.apache.poi.xwpf.extractor.XWPFWordExtractor;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+<<<<<<< HEAD
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+=======
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +47,7 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
 
     @Override
     public Long uploadAndParse(MultipartFile file) {
+<<<<<<< HEAD
         // 1. 保存文件到本地（使用UUID确保文件名安全）
         String originalFilename = file.getOriginalFilename();
         String ext = "";
@@ -45,6 +55,11 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
             ext = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
         String safeName = UUID.randomUUID() + ext;
+=======
+        // 1. 保存文件到本地
+        String originalFilename = file.getOriginalFilename();
+        String safeName = System.currentTimeMillis() + "_" + originalFilename;
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
         Path targetPath = Paths.get(uploadPath, "resume", safeName);
         try {
             Files.createDirectories(targetPath.getParent());
@@ -77,11 +92,15 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
     @Override
     public Long uploadFile(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
+<<<<<<< HEAD
         String ext = "";
         if (originalFilename != null && originalFilename.contains(".")) {
             ext = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
         String safeName = UUID.randomUUID() + ext;
+=======
+        String safeName = System.currentTimeMillis() + "_" + originalFilename;
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
         Path targetPath = Paths.get(uploadPath, "resume", safeName);
         try {
             Files.createDirectories(targetPath.getParent());
@@ -101,9 +120,12 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
         return resumeFile.getId();
     }
 
+<<<<<<< HEAD
     private static final com.fasterxml.jackson.databind.ObjectMapper SHARED_MAPPER =
             new com.fasterxml.jackson.databind.ObjectMapper();
 
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     @Override
     public void parseResume(Long resumeId) {
         ResumeInfo resumeInfo = baseMapper.selectById(resumeId);
@@ -119,6 +141,7 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
         }
 
         try {
+<<<<<<< HEAD
             // 1. 根据文件类型提取文本内容
             String textContent = extractTextFromFile(resumeFile.getFilePath(), resumeFile.getFileName());
 
@@ -138,6 +161,28 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
             resumeFileMapper.updateById(resumeFile);
             log.info("简历解析完成: resumeId={}", resumeId);
 
+=======
+            // 1. 使用PDFBox提取文本内容
+            String textContent = extractTextFromPdf(resumeFile.getFilePath());
+            
+            if (textContent != null && !textContent.trim().isEmpty()) {
+                log.info("PDF文本提取成功, 文本长度: {}", textContent.length());
+                
+                // 2. 使用AI解析结构化信息
+                parseWithAi(resumeInfo, textContent);
+                
+                // 3. 更新解析状态
+                resumeFile.setParseStatus(1);
+            } else {
+                // PDF无法提取文本（可能是扫描件），尝试使用正则从文件名等获取信息
+                log.warn("PDF文本为空或提取失败，使用基础信息");
+                resumeFile.setParseStatus(2); // 部分成功
+            }
+            
+            resumeFileMapper.updateById(resumeFile);
+            log.info("简历解析完成: resumeId={}", resumeId);
+            
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
         } catch (Exception e) {
             log.error("简历解析失败: resumeId={}, error={}", resumeId, e.getMessage(), e);
             resumeFile.setParseStatus(-1);
@@ -146,6 +191,7 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
     }
     
     /**
+<<<<<<< HEAD
      * 根据文件扩展名自动选择解析器提取文本
      */
     private String extractTextFromFile(String filePath, String fileName) {
@@ -156,6 +202,8 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
     }
 
     /**
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
      * 使用Apache PDFBox从PDF文件中提取文本
      */
     private String extractTextFromPdf(String filePath) {
@@ -165,6 +213,7 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
                 log.error("PDF文件不存在: {}", filePath);
                 return null;
             }
+<<<<<<< HEAD
 
             org.apache.pdfbox.pdmodel.PDDocument document =
                 org.apache.pdfbox.Loader.loadPDF(path.toFile());
@@ -173,12 +222,23 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
             String text = stripper.getText(document);
             document.close();
 
+=======
+            
+            org.apache.pdfbox.pdmodel.PDDocument document =
+                org.apache.pdfbox.Loader.loadPDF(path.toFile());
+            org.apache.pdfbox.text.PDFTextStripper stripper = 
+                new org.apache.pdfbox.text.PDFTextStripper();
+            String text = stripper.getText(document);
+            document.close();
+            
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
             return text.trim();
         } catch (Exception e) {
             log.error("PDF文本提取失败: filePath={}, error={}", filePath, e.getMessage(), e);
             return null;
         }
     }
+<<<<<<< HEAD
 
     /**
      * 使用Apache POI从DOCX文件中提取文本
@@ -194,6 +254,8 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
             return null;
         }
     }
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     
     /**
      * 使用AI（DeepSeek）解析简历文本，提取结构化信息
@@ -263,7 +325,12 @@ public class ResumeInfoServiceImpl extends ServiceImpl<ResumeInfoMapper, ResumeI
             // 提取JSON部分（去除可能的markdown代码块标记）
             String jsonStr = response.replaceAll("```json\\s*", "").replaceAll("```", "").trim();
             
+<<<<<<< HEAD
             java.util.Map<String, Object> result = SHARED_MAPPER.readValue(jsonStr, java.util.Map.class);
+=======
+            com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            java.util.Map<String, Object> result = objectMapper.readValue(jsonStr, java.util.Map.class);
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
             
             if (result.containsKey("name") && result.get("name") != null) {
                 resumeInfo.setName(String.valueOf(result.get("name")));

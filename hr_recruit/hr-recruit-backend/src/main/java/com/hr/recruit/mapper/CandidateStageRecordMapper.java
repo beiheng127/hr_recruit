@@ -3,6 +3,7 @@ package com.hr.recruit.mapper;
 import com.hr.recruit.entity.CandidateStageRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+<<<<<<< HEAD
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -28,4 +29,9 @@ public interface CandidateStageRecordMapper extends BaseMapper<CandidateStageRec
            "WHERE rp.job_id = #{jobId} AND csr.deleted = 0 " +
            "ORDER BY csr.create_time ASC")
     List<Map<String, Object>> getStageRecordsByJobId(@Param("jobId") Long jobId);
+=======
+
+@Mapper
+public interface CandidateStageRecordMapper extends BaseMapper<CandidateStageRecord> {
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 }

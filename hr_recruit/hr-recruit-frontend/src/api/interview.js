@@ -20,6 +20,7 @@ export function getInterviewSummary(interviewId) {
   return request.get(`/interviews/${interviewId}/summary`)
 }
 
+<<<<<<< HEAD
 /** 获取面试官列表 */
 export function getInterviewerList() {
   return request.get('/interviews/interviewers')
@@ -28,4 +29,8 @@ export function getInterviewerList() {
 /** 搜索候选人（供新建面试下拉用） */
 export function searchCandidates(keyword) {
   return request.get('/interviews/candidates', { params: { keyword } })
+=======
+export function generateInterviewQuestions(data) {
+  return request.post('/ai/generate-questions', data)
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 }

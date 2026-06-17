@@ -109,7 +109,11 @@ const routes = [
         path: 'logs',
         name: 'OperationLog',
         component: () => import('@/views/log/LogView.vue'),
+<<<<<<< HEAD
         meta: { title: '操作日志', icon: 'Notebook', roles: ['ADMIN'] }
+=======
+        meta: { title: '操作日志', icon: 'Notebook' }
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
       }
     ]
   }
@@ -124,6 +128,7 @@ router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   document.title = `${to.meta.title || ''} - HR招聘管理系统`
 
+<<<<<<< HEAD
   // 登录鉴权
   if (to.meta.requiresAuth !== false && !userStore.token) {
     next('/login')
@@ -146,6 +151,15 @@ router.beforeEach((to, from, next) => {
   }
 
   next()
+=======
+  if (to.meta.requiresAuth !== false && !userStore.token) {
+    next('/login')
+  } else if ((to.path === '/login' || to.path === '/admin/login') && userStore.token) {
+    next('/')
+  } else {
+    next()
+  }
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 })
 
 export default router

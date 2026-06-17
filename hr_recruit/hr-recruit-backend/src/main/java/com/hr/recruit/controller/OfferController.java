@@ -44,6 +44,7 @@ public class OfferController {
         return Result.success(offer);
     }
 
+<<<<<<< HEAD
     @GetMapping("/by-application/{applicationId}")
     public Result<OfferRecord> getByApplication(@PathVariable Long applicationId) {
         LambdaQueryWrapper<OfferRecord> wrapper = new LambdaQueryWrapper<>();
@@ -56,6 +57,8 @@ public class OfferController {
         return Result.success(offer);
     }
 
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     @PostMapping
     public Result<Void> create(@RequestBody OfferRecord offer) {
         offerRecordService.save(offer);
@@ -72,6 +75,7 @@ public class OfferController {
         offer.setSentAt(LocalDateTime.now());
         offerRecordService.updateById(offer);
 
+<<<<<<< HEAD
         // 更新 applicant_job 状态 + 创建通知
         if (offer.getApplicationId() != null) {
             ApplicantJob applicantJob = applicantJobMapper.selectById(offer.getApplicationId());
@@ -88,10 +92,24 @@ public class OfferController {
                 notification.setCreateTime(LocalDateTime.now());
                 notificationService.save(notification);
             }
+=======
+        // 创建通知记录
+        ApplicantJob applicantJob = applicantJobMapper.selectById(offer.getApplicationId());
+        if (applicantJob != null) {
+            Notification notification = new Notification();
+            notification.setRecipientId(applicantJob.getResumeId());
+            notification.setType("OFFER");
+            notification.setTitle("恭喜！您收到录用Offer");
+            notification.setContent("岗位：" + (offer.getPosition() != null ? offer.getPosition() : "") + "，请及时查看并确认。");
+            notification.setIsRead(0);
+            notification.setCreateTime(LocalDateTime.now());
+            notificationService.save(notification);
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
         }
         return Result.success("发送成功");
     }
 
+<<<<<<< HEAD
     @PostMapping("/{id}/accept")
     public Result<Void> accept(@PathVariable Long id) {
         OfferRecord offer = offerRecordService.getById(id);
@@ -112,6 +130,8 @@ public class OfferController {
         return Result.success("接受成功");
     }
 
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     @PutMapping("/{id}")
     public Result<Void> update(@PathVariable Long id, @RequestBody OfferRecord offer) {
         offer.setId(id);

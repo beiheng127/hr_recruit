@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ========== 系统文件 ==========
 .DS_Store
 Thumbs.db
@@ -13,12 +14,15 @@ desktop.ini
 *.ipr
 *.iws
 
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 # ========== Java / Maven ==========
 target/
 *.class
 *.jar
 *.war
 *.ear
+<<<<<<< HEAD
 .mvn/wrapper/maven-wrapper.jar
 
 # ========== Spring Boot ==========
@@ -27,6 +31,27 @@ target/
 **/application-local.*
 **/application-dev.*
 **/application-prod.*
+=======
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# ========== IDE ==========
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ========== Spring Boot ==========
+# 本地配置文件（可能含数据库密码等敏感信息）
+src/main/resources/application-local.*
+src/main/resources/application-dev.yml
+src/main/resources/application-prod.yml
+src/main/resources/application.yml
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 
 # 日志文件
 logs/
@@ -41,6 +66,7 @@ vite-env.d.ts
 # ========== 上传文件目录 ==========
 uploads/
 upload/
+<<<<<<< HEAD
 hr-recruit-uploads/
 
 # ========== 项目根目录下的临时/文档文件（不应入库）==========
@@ -70,3 +96,14 @@ plan_*/
 
 # 故障历史（可选，团队共享可保留）
 #.fault-history.md
+=======
+
+# ========== 项目特定 ==========
+# 故障历史记录（可选，团队共享）
+# .fault-history.md
+
+# ========== OS ==========
+.DS_Store
+Thumbs.db
+desktop.ini
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3

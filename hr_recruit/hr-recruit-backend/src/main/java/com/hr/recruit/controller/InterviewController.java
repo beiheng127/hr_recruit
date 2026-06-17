@@ -1,5 +1,6 @@
 package com.hr.recruit.controller;
 
+<<<<<<< HEAD
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hr.recruit.common.Result;
@@ -22,6 +23,24 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
+=======
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hr.recruit.common.Result;
+import com.hr.recruit.entity.InterviewArrangement;
+import com.hr.recruit.entity.InterviewEvaluation;
+import com.hr.recruit.entity.InterviewInterviewer;
+import com.hr.recruit.mapper.InterviewArrangementMapper;
+import com.hr.recruit.mapper.InterviewEvaluationMapper;
+import com.hr.recruit.mapper.InterviewInterviewerMapper;
+import com.hr.recruit.service.InterviewArrangementService;
+import com.hr.recruit.vo.InterviewVO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,10 +55,13 @@ public class InterviewController {
     private final InterviewArrangementMapper interviewMapper;
     private final InterviewEvaluationMapper evaluationMapper;
     private final InterviewInterviewerMapper interviewerMapper;
+<<<<<<< HEAD
     private final ApplicantJobService applicantJobService;
     private final CandidateStageRecordService stageRecordService;
     private final SysUserMapper sysUserMapper;
     private final ResumeInfoService resumeInfoService;
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 
     @GetMapping
     public Result<Page<InterviewVO>> list(
@@ -52,6 +74,7 @@ public class InterviewController {
         return Result.success(page);
     }
 
+<<<<<<< HEAD
     /**
      * 创建面试（通过 resumeId + jobId 自动构建关联链路）
      * 前端传入: resumeId, jobId, interviewTime, location, roundNum, interviewerIds
@@ -191,6 +214,26 @@ public class InterviewController {
         return Result.success(result);
     }
 
+=======
+    @PostMapping
+    public Result<Void> create(@RequestBody InterviewArrangement interview) {
+        interviewService.save(interview);
+        // 同步面试官记录
+        saveInterviewInterviewers(interview.getId(), interview.getInterviewerIds());
+        return Result.success("安排成功");
+    }
+
+    @PutMapping("/{interviewId}")
+    public Result<Void> update(@PathVariable Long interviewId, @RequestBody InterviewArrangement interview) {
+        interview.setId(interviewId);
+        interviewService.updateById(interview);
+        // 先删除旧记录，再插入新记录
+        interviewerMapper.deleteByMap(Map.of("interview_id", interviewId));
+        saveInterviewInterviewers(interviewId, interview.getInterviewerIds());
+        return Result.success("更新成功");
+    }
+
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     private void saveInterviewInterviewers(Long interviewId, List<Long> interviewerIds) {
         if (interviewerIds == null || interviewerIds.isEmpty()) return;
         List<InterviewInterviewer> list = interviewerIds.stream().map(iid -> {
@@ -206,6 +249,7 @@ public class InterviewController {
     }
 
     @PostMapping("/{interviewId}/evaluation")
+<<<<<<< HEAD
     public Result<Void> submitEvaluation(
             @PathVariable Long interviewId,
             @RequestBody Map<String, Object> data,
@@ -218,10 +262,14 @@ public class InterviewController {
         }
 
         // 创建评价记录
+=======
+    public Result<Void> submitEvaluation(@PathVariable Long interviewId, @RequestBody Map<String, Object> data) {
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
         InterviewEvaluation eval = new InterviewEvaluation();
         eval.setInterviewId(interviewId);
         eval.setScore(data.containsKey("score") ? Integer.valueOf(data.get("score").toString()) : null);
         eval.setEvaluation(data.containsKey("comments") ? data.get("comments").toString() : null);
+<<<<<<< HEAD
         eval.setInterviewerId(currentUserId);
         // 存储推荐意见
         if (data.containsKey("recommend")) {
@@ -249,11 +297,24 @@ public class InterviewController {
             interview.setStatus("ONGOING");
             interviewService.updateById(interview);
         }
+=======
+        eval.setInterviewerId(data.containsKey("evaluatorId") ? Long.valueOf(data.get("evaluatorId").toString()) : null);
+        evaluationMapper.insert(eval);
+
+        InterviewArrangement interview = new InterviewArrangement();
+        interview.setId(interviewId);
+        interview.setStatus("COMPLETED");
+        if (data.containsKey("comments")) {
+            log.info("面试评价已记录: interviewId={}", interviewId);
+        }
+        interviewService.updateById(interview);
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
         return Result.success("评价提交成功");
     }
 
     @GetMapping("/{interviewId}/summary")
     public Result<String> getSummary(@PathVariable Long interviewId) {
+<<<<<<< HEAD
         // 查询该面试的所有评价记录，拼接为摘要
         List<InterviewEvaluation> evals = evaluationMapper.selectList(
                 new LambdaQueryWrapper<InterviewEvaluation>()
@@ -338,5 +399,8 @@ public class InterviewController {
             case "INTERVIEWER": return "面试官";
             default: return role;
         }
+=======
+        return Result.success("暂无面试摘要", "暂无面试摘要");
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     }
 }

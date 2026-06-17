@@ -83,7 +83,11 @@
             </div>
             <template #footer>
               <el-button @click="offerVisible = false">关闭</el-button>
+<<<<<<< HEAD
               <el-button type="primary" v-if="offerData" @click="handleAcceptOffer">确认接受</el-button>
+=======
+              <el-button type="primary" v-if="offerData">确认接受</el-button>
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
             </template>
           </el-dialog>
         </div>
@@ -101,7 +105,11 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { List, Clock, Calendar, Search, Loading } from '@element-plus/icons-vue'
 import request from '@/api/request'
+<<<<<<< HEAD
 import { getOfferByApplication, acceptOffer } from '@/api/offer'
+=======
+import { getOfferDetail } from '@/api/offer'
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
@@ -174,8 +182,14 @@ async function viewOffer(app) {
   offerVisible.value = true
   offerData.value = null
   try {
+<<<<<<< HEAD
     // 按申请ID查询对应的Offer（而非直接传app.id给getOfferDetail）
     const res = await getOfferByApplication(app.id)
+=======
+    // 根据 app 对象中的 offerId 或 applicantJobId 查询 Offer
+    const offerId = app.offerId || app.id
+    const res = await getOfferDetail(offerId)
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     offerData.value = res.data || {}
   } catch (e) {
     ElMessage.error('获取Offer详情失败')
@@ -183,6 +197,7 @@ async function viewOffer(app) {
   }
 }
 
+<<<<<<< HEAD
 async function handleAcceptOffer() {
   if (!offerData.value || !offerData.value.id) return
   try {
@@ -195,6 +210,8 @@ async function handleAcceptOffer() {
   }
 }
 
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 onMounted(() => {
   // 如果URL中有keyword参数，自动查询
   const params = new URLSearchParams(window.location.search)

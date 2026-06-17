@@ -23,6 +23,7 @@
         <el-table-column prop="interviewTime" label="面试时间" width="160" />
         <el-table-column prop="location" label="地点" width="120" />
         <el-table-column prop="roundNum" label="轮次" width="60" align="center" />
+<<<<<<< HEAD
         <el-table-column prop="interviewerNames" label="面试官" width="140" />
         <el-table-column prop="status" label="状态" width="90" align="center">
           <template #default="{row}">
@@ -30,6 +31,15 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="240" fixed="right">
+=======
+        <el-table-column prop="interviewerNames" label="面试官" width="120" />
+        <el-table-column prop="status" label="状态" width="90" align="center">
+          <template #default="{row}">
+            <el-tag :type="statusType(row.status)">{{ statusText(row.status) }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="220" fixed="right">
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
           <template #default="{row}">
             <el-button size="small" @click="handleArrange(row)" v-if="row.status==='PENDING' || row.status==='SCHEDULED'">安排</el-button>
             <el-button size="small" type="primary" @click="handleEvaluate(row)" v-if="row.status==='SCHEDULED' || row.status==='ONGOING'">评价</el-button>
@@ -50,6 +60,7 @@
     </div>
 
     <!-- 新建/安排面试弹窗 -->
+<<<<<<< HEAD
     <el-dialog v-model="arrangeVisible" :title="isCreate ? '新建面试' : '安排面试'" width="580px" :close-on-click-modal="false" destroy-on-close>
       <el-form ref="arrangeFormRef" :model="arrangeForm" :rules="arrangeRules" label-width="90px">
         <el-form-item label="候选人" prop="resumeId">
@@ -106,11 +117,24 @@
 
         <el-form-item label="面试时间" prop="interviewTime">
           <el-date-picker v-model="arrangeForm.interviewTime" type="datetime" placeholder="选择时间" value-format="YYYY-MM-DDTHH:mm:ss" style="width:100%" />
+=======
+    <el-dialog v-model="arrangeVisible" :title="isCreate ? '新建面试' : '安排面试'" width="550px" :close-on-click-modal="false">
+      <el-form ref="arrangeFormRef" :model="arrangeForm" :rules="arrangeRules" label-width="90px">
+        <el-form-item label="候选人" prop="candidateName">
+          <el-input v-model="arrangeForm.candidateName" :disabled="!isCreate" placeholder="候选人姓名" />
+        </el-form-item>
+        <el-form-item label="应聘岗位" prop="positionName">
+          <el-input v-model="arrangeForm.positionName" :disabled="!isCreate" placeholder="岗位名称" />
+        </el-form-item>
+        <el-form-item label="面试时间" prop="interviewTime">
+          <el-date-picker v-model="arrangeForm.interviewTime" type="datetime" placeholder="选择时间" style="width:100%" />
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
         </el-form-item>
         <el-form-item label="地点" prop="location">
           <el-input v-model="arrangeForm.location" placeholder="会议室/视频链接" />
         </el-form-item>
         <el-form-item label="轮次" prop="roundNum">
+<<<<<<< HEAD
           <el-input-number v-model="arrangeForm.roundNum" :min="1" :max="10" style="width:100%" />
         </el-form-item>
         <el-form-item label="面试官">
@@ -127,6 +151,15 @@
               :label="item.label"
               :value="item.id"
             />
+=======
+          <el-input-number v-model="arrangeForm.roundNum" :min="1" style="width:100%" />
+        </el-form-item>
+        <el-form-item label="面试官">
+          <el-select v-model="arrangeForm.interviewerIds" multiple placeholder="选择面试官" style="width:100%">
+            <el-option label="张三（HR）" :value="1" />
+            <el-option label="李四（技术总监）" :value="2" />
+            <el-option label="王五（部门经理）" :value="3" />
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
           </el-select>
         </el-form-item>
       </el-form>
@@ -137,12 +170,17 @@
     </el-dialog>
 
     <!-- 面试评价弹窗 -->
+<<<<<<< HEAD
     <el-dialog v-model="evaluateVisible" title="面试评价" width="550px" :close-on-click-modal="false" destroy-on-close>
+=======
+    <el-dialog v-model="evaluateVisible" title="面试评价" width="550px" :close-on-click-modal="false">
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
       <el-form ref="evaluateFormRef" :model="evaluateForm" :rules="evaluateRules" label-width="90px">
         <el-form-item label="候选人">
           <span>{{ currentCandidateName }}</span>
         </el-form-item>
         <el-form-item label="评分" prop="score">
+<<<<<<< HEAD
           <el-rate v-model="evaluateForm.score" :max="5" show-score allow-half />
           <span style="margin-left:8px;color:#909399">{{ (evaluateForm.score * 20).toFixed(0) }}分</span>
         </el-form-item>
@@ -154,6 +192,19 @@
             <el-radio value="yes">推荐录用</el-radio>
             <el-radio value="no">不推荐</el-radio>
             <el-radio value="maybe">待定</el-radio>
+=======
+          <el-rate v-model="evaluateForm.score" :max="5" show-score />
+          <span style="margin-left:8px;color:#909399">{{ evaluateForm.score * 20 }}分</span>
+        </el-form-item>
+        <el-form-item label="评价内容" prop="comments">
+          <el-input v-model="evaluateForm.comments" type="textarea" :rows="4" placeholder="请输入面试评价" />
+        </el-form-item>
+        <el-form-item label="是否推荐">
+          <el-radio-group v-model="evaluateForm.recommend">
+            <el-radio label="yes">推荐录用</el-radio>
+            <el-radio label="no">不推荐</el-radio>
+            <el-radio label="maybe">待定</el-radio>
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -162,6 +213,7 @@
         <el-button type="primary" :loading="evaluateLoading" @click="submitEvaluate">提交评价</el-button>
       </template>
     </el-dialog>
+<<<<<<< HEAD
 
     <!-- 面试详情弹窗 -->
     <el-dialog v-model="detailVisible" title="面试详情" width="600px" destroy-on-close>
@@ -184,12 +236,15 @@
         <el-button @click="detailVisible = false">关闭</el-button>
       </template>
     </el-dialog>
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+<<<<<<< HEAD
 import {
   getInterviewList,
   arrangeInterview,
@@ -201,20 +256,32 @@ import {
 import { getJobList } from '@/api/job'
 
 // ==================== 列表数据 ====================
+=======
+import { getInterviewList, arrangeInterview, updateInterview, submitEvaluation } from '@/api/interview'
+
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 const loading = ref(false)
 const query = ref({ candidateName: '', status: '' })
 const tableData = ref([])
 const pagination = reactive({ page: 1, pageSize: 10, total: 0 })
 
+<<<<<<< HEAD
 // ==================== 新建/安排面试 ====================
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 const arrangeVisible = ref(false)
 const arrangeLoading = ref(false)
 const isCreate = ref(false)
 const arrangeFormRef = ref(null)
+<<<<<<< HEAD
 
 const arrangeForm = ref({
   resumeId: null,
   jobId: null,
+=======
+const arrangeForm = ref({
+  id: null,
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   candidateName: '',
   positionName: '',
   interviewTime: null,
@@ -224,6 +291,7 @@ const arrangeForm = ref({
 })
 
 const arrangeRules = {
+<<<<<<< HEAD
   resumeId: [{ required: true, message: '请搜索并选择候选人', trigger: 'change' }],
   jobId: [{ required: true, message: '请搜索并选择应聘岗位', trigger: 'change' }],
   interviewTime: [{ required: true, message: '请选择面试时间', trigger: 'change' }]
@@ -278,6 +346,13 @@ async function loadInterviewers() {
 }
 
 // ==================== 面试评价 ====================
+=======
+  candidateName: [{ required: true, message: '请输入候选人姓名', trigger: 'blur' }],
+  positionName: [{ required: true, message: '请输入岗位名称', trigger: 'blur' }],
+  interviewTime: [{ required: true, message: '请选择面试时间', trigger: 'change' }]
+}
+
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 const evaluateVisible = ref(false)
 const evaluateLoading = ref(false)
 const evaluateFormRef = ref(null)
@@ -290,11 +365,14 @@ const evaluateRules = {
   comments: [{ required: true, message: '请输入评价内容', trigger: 'blur' }]
 }
 
+<<<<<<< HEAD
 // ==================== 详情查看 ====================
 const detailVisible = ref(false)
 const detail = ref({})
 
 // ==================== 状态映射 ====================
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 function statusType(s) {
   return { PENDING: 'info', SCHEDULED: '', ONGOING: 'warning', COMPLETED: 'success' }[s] || 'info'
 }
@@ -302,7 +380,10 @@ function statusText(s) {
   return { PENDING: '待安排', SCHEDULED: '已安排', ONGOING: '进行中', COMPLETED: '已完成' }[s] || s
 }
 
+<<<<<<< HEAD
 // ==================== 数据加载 ====================
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 async function loadData() {
   loading.value = true
   try {
@@ -322,6 +403,7 @@ async function loadData() {
   }
 }
 
+<<<<<<< HEAD
 // ==================== 操作方法 ====================
 function handleCreate() {
   isCreate.value = true
@@ -333,6 +415,11 @@ function handleCreate() {
   positionOptions.value = []
   // 加载面试官选项
   loadInterviewers()
+=======
+function handleCreate() {
+  isCreate.value = true
+  arrangeForm.value = { id: null, candidateName: '', positionName: '', interviewTime: null, location: '', roundNum: 1, interviewerIds: [] }
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   arrangeVisible.value = true
 }
 
@@ -341,16 +428,25 @@ function handleArrange(row) {
   currentInterviewId.value = row.id
   arrangeForm.value = {
     id: row.id,
+<<<<<<< HEAD
     resumeId: null,
     jobId: null,
     candidateName: row.candidateName || '',
     positionName: row.positionName || '',
     interviewTime: row.interviewTime || null,
+=======
+    candidateName: row.candidateName || '',
+    positionName: row.positionName || '',
+    interviewTime: row.interviewTime ? new Date(row.interviewTime) : null,
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     location: row.location || '',
     roundNum: row.roundNum || 1,
     interviewerIds: []
   }
+<<<<<<< HEAD
   loadInterviewers()
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   arrangeVisible.value = true
 }
 
@@ -359,6 +455,7 @@ async function submitArrange() {
   arrangeLoading.value = true
   try {
     if (isCreate.value) {
+<<<<<<< HEAD
       // 新建：发送 resumeId + jobId，后端自动构建关联链路
       const payload = {
         resumeId: arrangeForm.value.resumeId,
@@ -373,20 +470,34 @@ async function submitArrange() {
     } else {
       // 安排/更新：只发送可编辑字段
       const payload = {
+=======
+      await arrangeInterview(arrangeForm.value)
+      ElMessage.success('面试创建成功')
+    } else {
+      await updateInterview(currentInterviewId.value, {
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
         interviewTime: arrangeForm.value.interviewTime,
         location: arrangeForm.value.location,
         roundNum: arrangeForm.value.roundNum,
         status: 'SCHEDULED',
         interviewerIds: arrangeForm.value.interviewerIds
+<<<<<<< HEAD
       }
       await updateInterview(currentInterviewId.value, payload)
+=======
+      })
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
       ElMessage.success('面试安排成功')
     }
     arrangeVisible.value = false
     loadData()
   } catch (e) {
+<<<<<<< HEAD
     const msg = e?.response?.data?.message || e?.message || ''
     ElMessage.error(isCreate.value ? `创建失败: ${msg}` : `安排失败: ${msg}`)
+=======
+    ElMessage.error(isCreate.value ? '创建失败' : '安排失败')
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   } finally {
     arrangeLoading.value = false
   }
@@ -404,7 +515,11 @@ async function submitEvaluate() {
   evaluateLoading.value = true
   try {
     await submitEvaluation(currentInterviewId.value, {
+<<<<<<< HEAD
       score: Math.round(evaluateForm.value.score * 20),
+=======
+      score: evaluateForm.value.score * 20,
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
       comments: evaluateForm.value.comments,
       recommend: evaluateForm.value.recommend
     })
@@ -412,16 +527,24 @@ async function submitEvaluate() {
     evaluateVisible.value = false
     loadData()
   } catch (e) {
+<<<<<<< HEAD
     const msg = e?.response?.data?.message || e?.message || ''
     ElMessage.error(`提交失败: ${msg}`)
+=======
+    ElMessage.error('提交失败')
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   } finally {
     evaluateLoading.value = false
   }
 }
 
 function handleView(row) {
+<<<<<<< HEAD
   detail.value = { ...row }
   detailVisible.value = true
+=======
+  ElMessage.info(`查看面试详情：ID=${row.id}`)
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 }
 
 onMounted(loadData)

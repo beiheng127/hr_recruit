@@ -19,8 +19,11 @@ public class InterviewEvaluation {
     private Integer learning;
     private String evaluation;
     private String aiSummary;
+<<<<<<< HEAD
     @TableField(exist = false)
     private String recommend;
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

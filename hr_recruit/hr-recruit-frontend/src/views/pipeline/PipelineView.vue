@@ -2,7 +2,11 @@
   <div class="pipeline-view">
     <div class="pipeline-header">
       <el-select v-model="selectedJobId" placeholder="选择岗位" style="width:300px" @change="loadPipeline" clearable>
+<<<<<<< HEAD
         <el-option v-for="j in jobList" :key="j.id" :label="j.positionName" :value="j.id" />
+=======
+        <el-option v-for="j in jobList" :key="j.id" :label="j.name" :value="j.id" />
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
       </el-select>
       <el-tag type="info">共 {{ totalCandidates }} 人</el-tag>
     </div>
@@ -50,7 +54,11 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+<<<<<<< HEAD
 import { getPipeline, switchStage, getJobStageRecords } from '@/api/pipeline'
+=======
+import { getPipeline, switchStage, getStageRecords } from '@/api/pipeline'
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import { getJobList } from '@/api/job'
 
 const stages = ref([])
@@ -127,7 +135,10 @@ async function loadPipeline() {
     const res = await getPipeline(selectedJobId.value)
     const list = res.data || []
     stages.value = list.map(item => ({
+<<<<<<< HEAD
       pipelineId: item.id,
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
       stageType: item.stageType,
       stageName: item.stageName,
       stageOrder: item.stageOrder
@@ -136,6 +147,7 @@ async function loadPipeline() {
     stages.value = []
   }
   try {
+<<<<<<< HEAD
     const res = await getJobStageRecords(selectedJobId.value)
     const records = res.data || []
     candidates.value = records.map(item => ({
@@ -146,6 +158,21 @@ async function loadPipeline() {
       matchScore: item.matchScore || 0,
       stage: item.stageType || ''
     }))
+=======
+    const res = await getStageRecords(selectedJobId.value)
+    const records = res.data || []
+    candidates.value = records.map(item => {
+      const stage = stages.value.find(s => s.pipelineId === item.pipelineId)
+      return {
+        id: item.applicationId || item.id,
+        recordId: item.id,
+        name: item.name || '',
+        position: item.position || '',
+        matchScore: item.matchScore || 0,
+        stage: stage ? stage.stageType : ''
+      }
+    })
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
   } catch {
     candidates.value = []
   }

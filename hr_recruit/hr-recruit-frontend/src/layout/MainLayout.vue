@@ -88,7 +88,11 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import { ref, computed, provide, onMounted } from 'vue'
+=======
+import { ref, computed, provide } from 'vue'
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import {
@@ -97,7 +101,10 @@ import {
   SwitchButton, Refresh
 } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
+<<<<<<< HEAD
 import { getNotifications } from '@/api/notification'
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 
 const route = useRoute()
 const router = useRouter()
@@ -143,6 +150,7 @@ function handleLogout() {
     router.push('/login')
   }).catch(() => {})
 }
+<<<<<<< HEAD
 
 /** 加载通知未读数 */
 async function loadUnreadCount() {
@@ -156,6 +164,8 @@ async function loadUnreadCount() {
 }
 
 onMounted(loadUnreadCount)
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 </script>
 
 <style scoped>

@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.hr.recruit.common.Result;
 import com.hr.recruit.entity.CandidateStageRecord;
 import com.hr.recruit.entity.RecruitmentPipeline;
+<<<<<<< HEAD
 import com.hr.recruit.mapper.CandidateStageRecordMapper;
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 import com.hr.recruit.service.CandidateStageRecordService;
 import com.hr.recruit.service.RecruitmentPipelineService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Map;
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 
 @Slf4j
 @RestController
@@ -22,7 +28,10 @@ public class RecruitmentPipelineController {
 
     private final RecruitmentPipelineService pipelineService;
     private final CandidateStageRecordService candidateStageRecordService;
+<<<<<<< HEAD
     private final CandidateStageRecordMapper candidateStageRecordMapper;
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
 
     @GetMapping("/job/{jobId}")
     public Result<List<RecruitmentPipeline>> getByJobId(@PathVariable Long jobId) {
@@ -59,10 +68,15 @@ public class RecruitmentPipelineController {
     public Result<List<CandidateStageRecord>> getStageRecords(@PathVariable Long applicationId) {
         LambdaQueryWrapper<CandidateStageRecord> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(CandidateStageRecord::getApplicationId, applicationId)
+<<<<<<< HEAD
+=======
+               .eq(CandidateStageRecord::getDeleted, 0)
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
                .orderByAsc(CandidateStageRecord::getCreateTime);
         return Result.success(candidateStageRecordService.list(wrapper));
     }
 
+<<<<<<< HEAD
     /**
      * 根据岗位ID查询该岗位下所有候选人的阶段记录（含候选人信息）
      */
@@ -71,6 +85,8 @@ public class RecruitmentPipelineController {
         return Result.success(candidateStageRecordMapper.getStageRecordsByJobId(jobId));
     }
 
+=======
+>>>>>>> 1a1d158e371191531b75389502f38fd6b00454a3
     @PutMapping("/stages/{recordId}/status")
     public Result<Void> updateStageStatus(@PathVariable Long recordId,
                                            @RequestParam String status,
